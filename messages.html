@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.4/angular.js"></script>
+</head>
+
+<body ng-app="app">
+  <div ng-controller="MainCtrl as main">
+    <div ng-click="main.alert()">-- ALERT --</div>
+    <surface name="Surface 1"></surface> <surface name="Surface 2"></surface>
+  </div>
+  <script>
+  angular.module('app', [])
+    .component('surface', {
+      template: `<div ng-click="$ctrl.click()">Cliquez-moi !</div>`,
+      bindings: {
+        name: '@'
+      },
+      controller: function ($scope, $log) {
+
+        this.click = () => $scope.$emit('CLICK', this.name);
+
+        $scope.$on('ALERT', () => $log.info('SURF', `${this.name} alert`));
+      }
+    })
+    .controller('MainCtrl', function ($scope, $log) {
+
+      this.alert = () => $scope.$broadcast('ALERT');
+
+      $scope.$on('CLICK', (evt, name) => $log.info('CTRL', `${name} clicked`));
+    });
+  </script>
+</body>
+
+
+</html>

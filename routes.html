@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.4/angular.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/1.0.0-rc.1/angular-ui-router.js"></script>
+</head>
+
+<body ng-app="app">
+  <div ng-controller="MainCtrl as main">
+    <span ng-click="main.home()">[ Home ] </span> <a ui-sref="profile"> [ Profil ]</a>
+  </div>
+  <ui-view></ui-view>
+  <script>
+  angular.module('app', ['ui.router'])
+    .component('home', {
+      template: `<div>Accueil</div>`
+    })
+    .component('userProfile', {
+      bindings: { user: '<' },
+      template: `<div>Profil utilisateur {{$ctrl.user}}</div>`,
+      controller: function () {}
+    })
+    .controller('MainCtrl', function ($log, $state, $transitions) {
+      $transitions.onEnter({}, (trans, route) => $log.info(`Changed to ${route.name}`));
+      this.home = () => $state.go('home');
+    })
+    .config(function ($stateProvider, $urlRouterProvider) {
+      $stateProvider
+        .state({ name: 'home', url: '/home', component: 'home' })
+        .state({ name: 'profile', url: '/profile', component: 'userProfile',
+          resolve: {
+            user: function () {
+              return { name: 'Herbert', email: 'herbert@provider.com' };
+            }
+          }
+      });
+      $urlRouterProvider.otherwise('/home');
+    });
+  </script>
+</body>
+
+
+</html>
